@@ -4,6 +4,7 @@ import L from 'leaflet';
 import { Room } from '../firebase/mockData';
 import { GeoCoords } from '../hooks/useGeolocation';
 import { Navigation } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface MapViewProps {
   rooms: Room[];
@@ -24,6 +25,7 @@ export const MapView: React.FC<MapViewProps> = ({
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersRef = useRef<Record<string, L.Marker>>({});
   const navigate = useNavigate();
+  const { isDark } = useTheme();
 
   // Custom SVG Markers to avoid missing Webpack/Vite image URLs
   const createCustomIcon = (isAvailable: boolean, isSelected: boolean) => {
@@ -53,7 +55,7 @@ export const MapView: React.FC<MapViewProps> = ({
   const userGpsIcon = L.divIcon({
     className: 'user-gps-marker',
     html: `
-      <div style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; relative;">
+      <div style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; position: relative;">
         <div style="position: absolute; width: 100%; height: 100%; background-color: #3b82f6; border-radius: 50%; opacity: 0.3; animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
         <div style="width: 20px; height: 20px; background-color: #2563eb; border: 3px solid white; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>
       </div>
@@ -66,24 +68,29 @@ export const MapView: React.FC<MapViewProps> = ({
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
-    // Default center to Delhi coordinates or first room or userCoords
     const initialLat = userCoords?.lat || rooms[0]?.coordinates?.lat || 28.6985;
     const initialLng = userCoords?.lng || rooms[0]?.coordinates?.lng || 77.2029;
 
     const map = L.map(mapContainerRef.current).setView([initialLat, initialLng], 13);
     mapInstanceRef.current = map;
 
-    // Premium OpenStreetMap Tile Layer
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    // Use dark tile layer when in dark mode
+    const baseUrl = isDark 
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+
+    const attribution = '&copy; <a href="https://www.openstreetmap.org/">OSM</a> contributors';
+
+    L.tileLayer(baseUrl, {
       maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/">OSM</a> contributors'
+      attribution
     }).addTo(map);
 
     return () => {
       map.remove();
       mapInstanceRef.current = null;
     };
-  }, []); // single init
+  }, [isDark]); // rebuild map when theme changes
 
   // Update Markers when rooms or selectedRoom changes
   useEffect(() => {
@@ -97,7 +104,7 @@ export const MapView: React.FC<MapViewProps> = ({
     // Add User GPS Pin & Radius Circle if available
     if (userCoords) {
       const uMarker = L.marker([userCoords.lat, userCoords.lng], { icon: userGpsIcon, zIndexOffset: 1000 }).addTo(map);
-      uMarker.bindPopup('<div class="font-bold text-sm text-indigo-900">📍 You Are Here</div><div class="text-[10px] text-slate-500">Showing search radius near your GPS coordinate</div>');
+      uMarker.bindPopup('<div class="font-bold text-sm text-indigo-900 dark:text-slate-100">📍 You Are Here</div><div class="text-[10px] text-slate-500 dark:text-slate-400">Showing search radius near your GPS coordinate</div>');
       markersRef.current['user_gps'] = uMarker;
 
       // Add 3km blue radius circle
@@ -105,7 +112,7 @@ export const MapView: React.FC<MapViewProps> = ({
         color: '#4f46e5',
         fillColor: '#6366f1',
         fillOpacity: 0.08,
-        radius: 3000 // 3km in meters
+        radius: 3000
       }).addTo(map);
     }
 
@@ -125,15 +132,15 @@ export const MapView: React.FC<MapViewProps> = ({
       // Create rich HTML interactive popup
       const popupContent = `
         <div class="p-2 max-w-xs font-sans">
-          <div class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900 inline-block mb-1">
+          <div class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900 text-amber-900 dark:text-amber-300 inline-block mb-1">
             ${room.wardNo}
           </div>
-          <h4 class="font-extrabold text-sm text-indigo-950 leading-tight mb-1">${room.title}</h4>
-          <div class="text-xs text-slate-600 mb-2">${room.locationText}</div>
-          <div class="flex items-center justify-between pt-2 border-t border-slate-100 mt-2">
+          <h4 class="font-extrabold text-sm text-indigo-950 dark:text-slate-100 leading-tight mb-1">${room.title}</h4>
+          <div class="text-xs text-slate-600 dark:text-slate-400 mb-2">${room.locationText}</div>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700 mt-2">
             <div>
-              <div class="text-[9px] text-slate-400 uppercase">Rent</div>
-              <div class="font-black text-indigo-700 text-sm">₹${room.rent}/mo</div>
+              <div class="text-[9px] text-slate-400 dark:text-slate-500 uppercase">Rent</div>
+              <div class="font-black text-indigo-700 dark:text-indigo-300 text-sm">₹${room.rent}/mo</div>
             </div>
             <button 
               id="popup-btn-${room.id}"
@@ -172,27 +179,27 @@ export const MapView: React.FC<MapViewProps> = ({
   }, [rooms, userCoords, selectedRoomId]);
 
   return (
-    <div className="relative rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-white">
+    <div className="relative rounded-3xl overflow-hidden shadow-xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
       {/* Interactive Map Box */}
       <div ref={mapContainerRef} style={{ height, width: '100%' }} className="z-10" />
 
       {/* Top Floating Map Legend overlay */}
-      <div className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-lg border border-slate-100 flex items-center gap-4 text-xs font-bold flex-wrap">
+      <div className="absolute top-4 left-4 z-20 bg-[var(--color-bg-secondary)]/90 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-lg border border-[var(--color-border)] flex items-center gap-4 text-xs font-bold flex-wrap">
         <span className="flex items-center gap-1.5">
           <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 inline-block shadow"></span>
-          <span className="text-slate-700">Available Room</span>
+          <span className="text-[var(--color-text-secondary)]">Available Room</span>
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-3.5 h-3.5 rounded-full bg-indigo-600 inline-block shadow"></span>
-          <span className="text-slate-700">Selected / Active</span>
+          <span className="text-[var(--color-text-secondary)]">Selected / Active</span>
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-3.5 h-3.5 rounded-full bg-rose-500 inline-block shadow"></span>
-          <span className="text-slate-700">Rented Out</span>
+          <span className="text-[var(--color-text-secondary)]">Rented Out</span>
         </span>
         {userCoords && (
-          <span className="flex items-center gap-1.5 bg-blue-50 px-2.5 py-1 rounded-xl text-blue-800 border border-blue-200">
-            <Navigation className="w-3 h-3 animate-spin text-blue-600" />
+          <span className="flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/30 px-2.5 py-1 rounded-xl text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+            <Navigation className="w-3 h-3 animate-spin text-blue-600 dark:text-blue-400" />
             <span>Showing 3km Near GPS</span>
           </span>
         )}

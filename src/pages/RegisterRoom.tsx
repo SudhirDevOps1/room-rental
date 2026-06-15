@@ -2,17 +2,18 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createRoom } from '../firebase/db';
 import { useAuth } from '../context/AuthContext';
-import { useGeolocation, CITY_COORDINATES } from '../hooks/useGeolocation';
+import { useGeolocation, CITY_COORDINATES, LOCATION_SUGGESTIONS, inferStateFromLocation } from '../hooks/useGeolocation';
 import { ROOM_TYPE_OPTIONS, GENDER_OPTIONS, ALL_AMENITIES_LIST, Room } from '../firebase/mockData';
 import { PhotoUploader } from '../components/PhotoUploader';
 import { 
   Building2, MapPin, IndianRupee, ArrowRight, Navigation 
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth }) => {
   const { user, switchRole } = useAuth();
   const navigate = useNavigate();
-  const { detectLocation, isDetecting, coords, setCoords } = useGeolocation();
+  const { detectLocation, isDetecting, coords, setCoords, resolveLocationName } = useGeolocation();
 
   // Wizard UI step
   const [step, setStep] = useState(1);
@@ -47,9 +48,16 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
     else if (cityName === 'Noida') setState('Uttar Pradesh');
     else if (cityName === 'Kota') setState('Rajasthan');
 
-    if (CITY_COORDINATES[cityName]) {
-      setCoords(CITY_COORDINATES[cityName]);
-    }
+    else setState(inferStateFromLocation(cityName));
+
+    const presetKey = Object.keys(CITY_COORDINATES).find(k => cityName.toLowerCase().includes(k.toLowerCase()));
+    if (presetKey) setCoords(CITY_COORDINATES[presetKey]);
+  };
+
+  const handleResolveCity = async () => {
+    const resolved = await resolveLocationName(city);
+    if (resolved) setCoords(resolved);
+    setState(inferStateFromLocation(city));
   };
 
   const handleAutoGps = () => {
@@ -70,7 +78,7 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
     }
 
     if (photosURLs.length === 0) {
-      alert("Please upload or attach at least 1 photo for your listing.");
+      toast.error("Please upload or attach at least 1 photo for your listing.");
       return;
     }
 
@@ -109,6 +117,7 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
       });
 
       setSuccessId(newRoomId);
+      toast.success('Room listed successfully');
       setTimeout(() => {
         setSubmitting(false);
         navigate('/my-listings');
@@ -117,7 +126,7 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
     } catch (err) {
       console.error("Room Register err:", err);
       setSubmitting(false);
-      alert("Could not register room. Please review your entries.");
+      toast.error("Could not register room. Please review your entries.");
     }
   };
 
@@ -127,11 +136,11 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
         <div className="w-20 h-20 bg-emerald-500 text-white rounded-3xl flex items-center justify-center font-black text-4xl mx-auto shadow-2xl animate-bounce">
           ✓
         </div>
-        <h2 className="text-3xl font-black text-indigo-950 tracking-tight">Property Listed Successfully!</h2>
-        <p className="text-sm text-slate-600 leading-relaxed max-w-md mx-auto">
+        <h2 className="text-3xl font-black text-[var(--color-text-primary)] tracking-tight">Property Listed Successfully!</h2>
+        <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed max-w-md mx-auto">
           Your room has been accurately Geo-indexed by ward and city. It is now live on the global NestFinder search portal.
         </p>
-        <div className="p-4 bg-indigo-50 rounded-2xl border border-indigo-100 font-mono text-xs font-bold text-indigo-900">
+          <div className="p-4 bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl border border-indigo-100 dark:border-indigo-800 font-mono text-xs font-bold text-indigo-900 dark:text-indigo-200">
           Listing ID: {successId}
         </div>
       </div>
@@ -164,7 +173,7 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
               type="button"
               onClick={() => setStep(1)}
               className={`px-3 py-1.5 rounded-xl text-xs font-black transition ${
-                step === 1 ? 'bg-white text-indigo-900 shadow' : 'text-indigo-200 hover:text-white'
+                step === 1 ? 'bg-white dark:bg-slate-700 text-indigo-900 dark:text-indigo-200 shadow' : 'text-indigo-200 hover:text-white'
               }`}
             >
               Step 1: Location
@@ -173,7 +182,7 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
               type="button"
               onClick={() => setStep(2)}
               className={`px-3 py-1.5 rounded-xl text-xs font-black transition ${
-                step === 2 ? 'bg-white text-indigo-900 shadow' : 'text-indigo-200 hover:text-white'
+                step === 2 ? 'bg-white dark:bg-slate-700 text-indigo-900 dark:text-indigo-200 shadow' : 'text-indigo-200 hover:text-white'
               }`}
             >
               Step 2: Info & Photos
@@ -183,16 +192,16 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
       </div>
 
       {/* Main Wizard Form Body */}
-      <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-xl space-y-8">
+      <form onSubmit={handleSubmit} className="bg-[var(--color-bg-secondary)] rounded-3xl p-6 sm:p-10 border border-[var(--color-border)] shadow-xl space-y-8">
         
         {/* Step 1: Location & Coordinates */}
         {step === 1 && (
           <div className="space-y-6 animate-fadeIn">
-            <div className="border-b border-slate-200/80 pb-4 flex items-center justify-between">
-              <h3 className="text-lg font-black text-indigo-950 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-indigo-600" /> Exact Property Address & Geo-Indexing
+            <div className="border-b border-[var(--color-border)] pb-4 flex items-center justify-between">
+              <h3 className="text-lg font-black text-[var(--color-text-primary)] flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> Exact Property Address & Geo-Indexing
               </h3>
-              <span className="text-xs text-slate-400 font-semibold">Step 1 of 2</span>
+              <span className="text-xs text-[var(--color-text-tertiary)] font-semibold">Step 1 of 2</span>
             </div>
 
             {/* GPS Auto trigger Banner */}
@@ -219,62 +228,71 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               
-              {/* City selector */}
+              {/* City / village / district input */}
               <div>
-                <label className="block text-xs font-black text-slate-700 mb-1.5">City / Urban Hub *</label>
-                <select
+                <label className="block text-xs font-black text-[var(--color-text-secondary)] mb-1.5">City / District / Village / Area *</label>
+                <input
                   required
+                  list="register-location-suggestions"
                   value={city}
                   onChange={(e) => handleCityChange(e.target.value)}
-                  className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-extrabold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-600 cursor-pointer"
+                  onBlur={handleResolveCity}
+                  placeholder="e.g. Bhabua, Kaimur, Bihar"
+                  className="w-full p-3.5 bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] rounded-2xl text-sm font-extrabold text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-indigo-600 cursor-pointer"
+                />
+                <datalist id="register-location-suggestions">
+                  {LOCATION_SUGGESTIONS.map(place => <option key={place} value={place} />)}
+                </datalist>
+                <button
+                  type="button"
+                  onClick={handleResolveCity}
+                  className="mt-2 text-[11px] font-black text-indigo-600 dark:text-indigo-400 hover:underline"
                 >
-                  {Object.keys(CITY_COORDINATES).map(c => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
+                  Resolve map pin for this custom place
+                </button>
               </div>
 
               {/* Ward No */}
               <div>
-                <label className="block text-xs font-black text-slate-700 mb-1.5">Ward No. or Municipal Zone *</label>
+                <label className="block text-xs font-black text-[var(--color-text-secondary)] mb-1.5">Ward No. or Municipal Zone *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Ward 12, Sector 6"
                   value={wardNo}
                   onChange={(e) => setWardNo(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white"
+                  className="w-full px-4 py-3 bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] rounded-2xl text-sm font-bold text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-[var(--color-bg-secondary)] placeholder:text-[var(--color-text-tertiary)]"
                 />
               </div>
 
               {/* Specific Street Address / Outram lines */}
               <div className="sm:col-span-2">
-                <label className="block text-xs font-black text-slate-700 mb-1.5">Detailed Address or Colony Line *</label>
+                <label className="block text-xs font-black text-[var(--color-text-secondary)] mb-1.5">Detailed Address or Colony Line *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Plot 42, Hudson Lane near Metro Gate 3"
                   value={locationText}
                   onChange={(e) => setLocationText(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white"
+                  className="w-full px-4 py-3 bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] rounded-2xl text-sm font-semibold text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-[var(--color-bg-secondary)] placeholder:text-[var(--color-text-tertiary)]"
                 />
               </div>
 
               {/* Landmark */}
               <div>
-                <label className="block text-xs font-black text-slate-700 mb-1.5">Prominent Landmark</label>
+                <label className="block text-xs font-black text-[var(--color-text-secondary)] mb-1.5">Prominent Landmark</label>
                 <input
                   type="text"
                   placeholder="e.g. Opposite DU Law Faculty Gate"
                   value={landmark}
                   onChange={(e) => setLandmark(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white"
+                  className="w-full px-4 py-3 bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] rounded-2xl text-sm font-medium text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-[var(--color-bg-secondary)] placeholder:text-[var(--color-text-tertiary)]"
                 />
               </div>
 
               {/* Pincode */}
               <div>
-                <label className="block text-xs font-black text-slate-700 mb-1.5">Postal Pincode *</label>
+                <label className="block text-xs font-black text-[var(--color-text-secondary)] mb-1.5">Postal Pincode *</label>
                 <input
                   type="text"
                   required
@@ -282,20 +300,20 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
                   placeholder="e.g. 110009"
                   value={pincode}
                   onChange={(e) => setPincode(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white"
+                  className="w-full px-4 py-3 bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] rounded-2xl text-sm font-mono font-bold text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-[var(--color-bg-secondary)] placeholder:text-[var(--color-text-tertiary)]"
                 />
               </div>
 
             </div>
 
             {/* Simulated Live GPS coordinate badge */}
-            <div className="p-3 bg-slate-100 rounded-2xl text-[11px] font-mono text-slate-600 flex items-center justify-between">
-              <span>Current Registered Geocode: <strong className="text-indigo-800">[{coords.lat}, {coords.lng}]</strong></span>
-              <span className="text-emerald-600 font-extrabold">Geohash Encoded ✓</span>
+            <div className="p-3 bg-[var(--color-bg-tertiary)] rounded-2xl text-[11px] font-mono text-[var(--color-text-secondary)] flex items-center justify-between border border-[var(--color-border)]">
+              <span>Current Registered Geocode: <strong className="text-[var(--color-text-primary)]">[{coords.lat}, {coords.lng}]</strong></span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-extrabold">Geohash Encoded ✓</span>
             </div>
 
             {/* Next step button */}
-            <div className="flex justify-end pt-4 border-t border-slate-100">
+            <div className="flex justify-end pt-4 border-t border-[var(--color-border)]">
               <button
                 type="button"
                 onClick={() => setStep(2)}
@@ -311,9 +329,9 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
         {/* Step 2: Details & Photos */}
         {step === 2 && (
           <div className="space-y-8 animate-fadeIn">
-            <div className="border-b border-slate-200/80 pb-4 flex items-center justify-between">
-              <h3 className="text-lg font-black text-indigo-950 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-indigo-600" /> Property Spec, Financials & Image Gallery
+            <div className="border-b border-[var(--color-border)] pb-4 flex items-center justify-between">
+              <h3 className="text-lg font-black text-[var(--color-text-primary)] flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> Property Spec, Financials & Image Gallery
               </h3>
               <button
                 type="button"
@@ -326,14 +344,14 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
 
             {/* Core Listing Title */}
             <div>
-              <label className="block text-xs font-black text-slate-700 mb-1.5">Striking Catchy Title for Listing *</label>
+              <label className="block text-xs font-black text-[var(--color-text-secondary)] mb-1.5">Striking Catchy Title for Listing *</label>
               <input
                 type="text"
                 required
                 placeholder="e.g. Spacious Air Conditioned Private Single Room for Students"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white"
+                className="w-full px-4 py-3.5 bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] rounded-2xl text-sm font-extrabold text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-[var(--color-bg-secondary)] placeholder:text-[var(--color-text-tertiary)]"
               />
             </div>
 
@@ -341,11 +359,11 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               
               <div>
-                <label className="block text-xs font-black text-slate-700 mb-1.5">Room Category *</label>
+                <label className="block text-xs font-black text-[var(--color-text-secondary)] mb-1.5">Room Category *</label>
                 <select
                   value={type}
                   onChange={(e: any) => setType(e.target.value)}
-                  className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-extrabold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-600 cursor-pointer"
+                  className="w-full p-3.5 bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] rounded-2xl text-xs font-extrabold text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-indigo-600 cursor-pointer"
                 >
                   {ROOM_TYPE_OPTIONS.map(t => (
                     <option key={t} value={t}>{t}</option>
@@ -354,9 +372,9 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
               </div>
 
               <div>
-                <label className="block text-xs font-black text-slate-700 mb-1.5">Rent Amount *</label>
+                <label className="block text-xs font-black text-[var(--color-text-secondary)] mb-1.5">Rent Amount *</label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-[var(--color-text-tertiary)]">
                     <IndianRupee className="w-4 h-4" />
                   </span>
                   <input
@@ -366,12 +384,12 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
                     max={100000}
                     value={rent}
                     onChange={(e) => setRent(Number(e.target.value))}
-                    className="w-full pl-9 pr-14 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-black text-indigo-950 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white font-mono"
+                    className="w-full pl-9 pr-14 py-3.5 bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] rounded-2xl text-sm font-black text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-[var(--color-bg-secondary)] font-mono"
                   />
                   <select
                     value={rentType}
                     onChange={(e: any) => setRentType(e.target.value)}
-                    className="absolute inset-y-0 right-0 px-2 bg-transparent text-xs font-bold text-slate-600 focus:outline-none cursor-pointer border-l border-slate-200"
+                    className="absolute inset-y-0 right-0 px-2 bg-transparent text-xs font-bold text-[var(--color-text-secondary)] focus:outline-none cursor-pointer border-l border-[var(--color-border)]"
                   >
                     <option value="month">/mo</option>
                     <option value="day">/day</option>
@@ -380,9 +398,9 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
               </div>
 
               <div>
-                <label className="block text-xs font-black text-slate-700 mb-1.5">Security Token (Deposit) *</label>
+                <label className="block text-xs font-black text-[var(--color-text-secondary)] mb-1.5">Security Token (Deposit) *</label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-[var(--color-text-tertiary)]">
                     <IndianRupee className="w-4 h-4" />
                   </span>
                   <input
@@ -390,7 +408,7 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
                     required
                     value={securityDeposit}
                     onChange={(e) => setSecurityDeposit(Number(e.target.value))}
-                    className="w-full pl-9 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white font-mono"
+                    className="w-full pl-9 pr-4 py-3.5 bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] rounded-2xl text-sm font-bold text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-[var(--color-bg-secondary)] font-mono"
                   />
                 </div>
               </div>
@@ -399,7 +417,7 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
 
             {/* Gender Preferences */}
             <div>
-              <label className="block text-xs font-black text-slate-700 mb-1.5">Gender Suitability & Restrictions *</label>
+              <label className="block text-xs font-black text-[var(--color-text-secondary)] mb-1.5">Gender Suitability & Restrictions *</label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {GENDER_OPTIONS.map(g => (
                   <button
@@ -409,7 +427,7 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
                     className={`py-3 px-3 rounded-2xl font-black text-xs border text-center transition cursor-pointer ${
                       genderPref === g
                         ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-indigo-600 shadow-md'
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        : 'bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:bg-[var(--color-border)]'
                     }`}
                   >
                     {g}
@@ -420,8 +438,8 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
 
             {/* Included Amenities Checklist */}
             <div>
-              <label className="block text-xs font-black text-slate-700 mb-1.5">Key Living Amenities (Select all available)</label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 bg-slate-50 rounded-3xl border border-slate-200/80">
+              <label className="block text-xs font-black text-[var(--color-text-secondary)] mb-1.5">Key Living Amenities (Select all available)</label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 bg-[var(--color-bg-tertiary)] rounded-3xl border border-[var(--color-border)]">
                 {ALL_AMENITIES_LIST.map(am => {
                   const isChecked = amenities.includes(am.id);
                   return (
@@ -432,7 +450,7 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
                       className={`p-2.5 rounded-2xl text-xs font-bold text-left flex items-center gap-2 border transition cursor-pointer ${
                         isChecked 
                           ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs' 
-                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                          : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:bg-[var(--color-bg-tertiary)]'
                       }`}
                     >
                       <span>{am.icon}</span>
@@ -445,7 +463,7 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
 
             {/* Photo Uploader Component */}
             <div>
-              <label className="block text-xs font-black text-slate-700 mb-1.5">Room Images (Attach directly or use gallery presets) *</label>
+              <label className="block text-xs font-black text-[var(--color-text-secondary)] mb-1.5">Room Images (Attach directly or use gallery presets) *</label>
               <PhotoUploader
                 photos={photosURLs}
                 onChange={(newPhotos) => setPhotosURLs(newPhotos)}
@@ -454,21 +472,21 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
 
             {/* Description */}
             <div>
-              <label className="block text-xs font-black text-slate-700 mb-1.5">Property Description & Move-in Guidelines</label>
+              <label className="block text-xs font-black text-[var(--color-text-secondary)] mb-1.5">Property Description & Move-in Guidelines</label>
               <textarea
                 rows={4}
                 placeholder="Mention internet speeds, water availability timings, cooking restrictions, distance to nearby bus/metro, and peaceful study atmosphere..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white leading-relaxed"
+                className="w-full p-4 bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] rounded-2xl text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-[var(--color-bg-secondary)] leading-relaxed text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)]"
               ></textarea>
             </div>
 
             {/* Immediate Live toggle */}
-            <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200/80 flex items-center justify-between text-xs">
+            <div className="p-4 bg-emerald-50 dark:bg-emerald-900/30 rounded-2xl border border-emerald-200/80 dark:border-emerald-800 flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
-                <span className="font-extrabold text-emerald-950">Publish Immediately as Available</span>
+                <span className="font-extrabold text-emerald-950 dark:text-emerald-300">Publish Immediately as Available</span>
               </div>
               <input
                 type="checkbox"
@@ -479,11 +497,11 @@ export const RegisterRoom: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth 
             </div>
 
             {/* Submit Action buttons */}
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-4">
+            <div className="pt-4 border-t border-[var(--color-border)] flex items-center justify-between gap-4">
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="px-6 py-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition"
+                className="px-6 py-4 rounded-2xl bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border)] text-[var(--color-text-secondary)] font-bold text-xs transition cursor-pointer"
               >
                 ← Prev (Location)
               </button>

@@ -55,26 +55,26 @@ export const RoomDetail: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth })
 
   if (loading) {
     return (
-      <div className="bg-white rounded-3xl p-20 text-center max-w-4xl mx-auto my-12 border border-slate-200 shadow-xl space-y-4">
+      <div className="bg-[var(--color-bg-secondary)] rounded-3xl p-20 text-center max-w-4xl mx-auto my-12 border border-[var(--color-border)] shadow-xl space-y-4">
         <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-        <div className="text-base font-extrabold text-indigo-950">Loading Room Details & Interactive Pin...</div>
+        <div className="text-base font-extrabold text-[var(--color-text-primary)]">Loading Room Details & Interactive Pin...</div>
       </div>
     );
   }
 
   if (!room) {
     return (
-      <div className="bg-white rounded-3xl p-16 text-center max-w-3xl mx-auto my-12 border border-slate-200 shadow-xl space-y-4">
-        <div className="w-16 h-16 bg-rose-50 text-rose-600 rounded-3xl flex items-center justify-center font-black text-3xl mx-auto shadow-inner">
+      <div className="bg-[var(--color-bg-secondary)] rounded-3xl p-16 text-center max-w-3xl mx-auto my-12 border border-[var(--color-border)] shadow-xl space-y-4">
+        <div className="w-16 h-16 bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-3xl flex items-center justify-center font-black text-3xl mx-auto shadow-inner">
           ❌
         </div>
-        <h2 className="text-2xl font-black text-indigo-950 tracking-tight">Room Not Found or Deleted</h2>
+        <h2 className="text-2xl font-black text-[var(--color-text-primary)] tracking-tight">Room Not Found or Deleted</h2>
         <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
           The requested rental listing is no longer active or has been fully removed by the room owner.
         </p>
         <button
           onClick={() => navigate('/search')}
-          className="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md transition"
+          className="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md transition cursor-pointer"
         >
           Explore Available Listings
         </button>
@@ -151,7 +151,7 @@ export const RoomDetail: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth })
       <div className="flex items-center justify-between gap-4">
         <button
           onClick={() => navigate('/search')}
-          className="px-4 py-2 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 font-extrabold text-xs flex items-center gap-2 border border-slate-200 shadow-2xs transition active:scale-95"
+          className="px-4 py-2 rounded-2xl bg-[var(--color-bg-secondary)] hover:bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] font-extrabold text-xs flex items-center gap-2 border border-[var(--color-border)] shadow-2xs transition active:scale-95 cursor-pointer"
         >
           ← Back to Search Hub
         </button>
@@ -159,7 +159,7 @@ export const RoomDetail: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth })
         <div className="flex items-center gap-2">
           <button
             onClick={handleShare}
-            className="p-2.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center gap-1.5 border border-slate-200 shadow-2xs transition active:scale-95"
+            className="p-2.5 rounded-2xl bg-[var(--color-bg-secondary)] hover:bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] font-bold text-xs flex items-center gap-1.5 border border-[var(--color-border)] shadow-2xs transition active:scale-95 cursor-pointer"
             title="Share Room link"
           >
             <Share2 className="w-4 h-4 text-indigo-600" />
@@ -175,7 +175,7 @@ export const RoomDetail: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth })
         <div className="lg:col-span-2 space-y-8">
           
           {/* Main Photo Gallery Box */}
-          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-lg overflow-hidden space-y-3 p-3">
+          <div className="bg-[var(--color-bg-secondary)] rounded-3xl border border-[var(--color-border)] shadow-lg overflow-hidden space-y-3 p-3">
             {/* Active Highlight Image */}
             <div className="w-full h-72 sm:h-96 rounded-2xl overflow-hidden bg-slate-900 relative group">
               <img
@@ -253,24 +253,24 @@ export const RoomDetail: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth })
           </div>
 
           {/* Core Title & Information Card */}
-          <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-xs space-y-4">
+          <div className="bg-[var(--color-bg-secondary)] rounded-3xl p-8 border border-[var(--color-border)] shadow-xs space-y-4">
             <div className="flex items-center justify-between gap-3 flex-wrap">
-              <span className="bg-indigo-50 text-indigo-700 font-extrabold text-xs px-3 py-1 rounded-xl">
+              <span className="bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 font-extrabold text-xs px-3 py-1 rounded-xl">
                 {room.type}
               </span>
 
-              <span className="text-xs text-emerald-600 font-extrabold flex items-center gap-1 bg-emerald-50 px-3 py-1 rounded-xl border border-emerald-200/80">
-                <ShieldCheck className="w-4 h-4 text-emerald-500" />
+              <span className="text-xs text-emerald-600 dark:text-emerald-400 font-extrabold flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1 rounded-xl border border-emerald-200/80 dark:border-emerald-800">
+                <ShieldCheck className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                 <span>Brokerage Free Verified</span>
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-[var(--color-text-primary)] tracking-tight leading-tight">
               {room.title}
             </h1>
 
-            <p className="text-sm text-slate-600 flex items-center gap-2 font-medium">
-              <MapPin className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+            <p className="text-sm text-[var(--color-text-secondary)] flex items-center gap-2 font-medium">
+              <MapPin className="w-4 h-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
               <span>{room.locationText}, {room.landmark ? `Opposite ${room.landmark}, ` : ''}{room.city}, {room.state} - {room.pincode}</span>
             </p>
 
@@ -283,24 +283,24 @@ export const RoomDetail: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth })
           </div>
 
           {/* Complete Description & Living Rules */}
-          <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-xs space-y-4">
-            <h3 className="text-lg font-black text-indigo-950 tracking-tight flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-indigo-600" /> Property Overview & Living Environment
+          <div className="bg-[var(--color-bg-secondary)] rounded-3xl p-8 border border-[var(--color-border)] shadow-xs space-y-4">
+            <h3 className="text-lg font-black text-[var(--color-text-primary)] tracking-tight flex items-center gap-2">
+              <Building2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> Property Overview & Living Environment
             </h3>
-            <p className="text-sm text-slate-600 leading-relaxed font-medium whitespace-pre-line">
+            <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed font-medium whitespace-pre-line">
               {room.description || "A wonderful independent residential property equipped with super quiet study/living facilities, dedicated lighting, secure multi-point entry, and robust nearby public connectivity."}
             </p>
           </div>
 
           {/* Living Amenities Array */}
-          <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-xs space-y-4">
-            <h3 className="text-lg font-black text-indigo-950 tracking-tight">
+          <div className="bg-[var(--color-bg-secondary)] rounded-3xl p-8 border border-[var(--color-border)] shadow-xs space-y-4">
+            <h3 className="text-lg font-black text-[var(--color-text-primary)] tracking-tight">
               Included Amenities & Furnishings
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {room.amenities.map(am => (
-                <div key={am} className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center gap-3 text-xs font-extrabold text-slate-800">
-                  <div className="w-8 h-8 rounded-xl bg-white text-indigo-600 shadow-2xs flex items-center justify-center text-base">
+                <div key={am} className="p-3 rounded-2xl bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] flex items-center gap-3 text-xs font-extrabold text-[var(--color-text-primary)]">
+                  <div className="w-8 h-8 rounded-xl bg-[var(--color-bg-secondary)] text-indigo-600 dark:text-indigo-400 shadow-2xs flex items-center justify-center text-base">
                     ✓
                   </div>
                   <span>{am}</span>
@@ -310,10 +310,10 @@ export const RoomDetail: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth })
           </div>
 
           {/* Interactive Live Pin Map section */}
-          <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-xs space-y-4">
-            <h3 className="text-lg font-black text-indigo-950 tracking-tight flex items-center justify-between">
+          <div className="bg-[var(--color-bg-secondary)] rounded-3xl p-8 border border-[var(--color-border)] shadow-xs space-y-4">
+            <h3 className="text-lg font-black text-[var(--color-text-primary)] tracking-tight flex items-center justify-between">
               <span>📍 Location Pin & Proximity Map</span>
-              <span className="text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-xl border border-amber-200/80">
+              <span className="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-3 py-1 rounded-xl border border-amber-200/80 dark:border-amber-800">
                 {room.wardNo}
               </span>
             </h3>
@@ -398,8 +398,8 @@ export const RoomDetail: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth })
           </div>
 
           {/* Verified Owner Persona Profile Card */}
-          <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-4">
-            <span className="text-[10px] font-black text-indigo-600 tracking-widest uppercase">Verified Room Owner</span>
+          <div className="bg-[var(--color-bg-secondary)] rounded-3xl p-6 border border-[var(--color-border)] shadow-xs space-y-4">
+            <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 tracking-widest uppercase">Verified Room Owner</span>
             
             <div className="flex items-center gap-4">
               <img
@@ -408,8 +408,8 @@ export const RoomDetail: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth })
                 className="w-16 h-16 rounded-2xl object-cover ring-2 ring-indigo-600/30 shadow-md"
               />
               <div>
-                <h4 className="text-base font-extrabold text-slate-900">{room.ownerName}</h4>
-                <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5 font-semibold">
+                <h4 className="text-base font-extrabold text-[var(--color-text-primary)]">{room.ownerName}</h4>
+                <div className="text-xs text-[var(--color-text-tertiary)] flex items-center gap-1 mt-0.5 font-semibold">
                   <MapPin className="w-3 h-3 text-emerald-600" /> {room.city} • Ward Host
                 </div>
                 {existingRequest?.status === 'accepted' && (
@@ -420,25 +420,25 @@ export const RoomDetail: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth })
               </div>
             </div>
 
-            <div className="border-t border-slate-100 pt-3 text-xs text-slate-600 leading-relaxed font-medium">
+            <div className="border-t border-[var(--color-border)] pt-3 text-xs text-[var(--color-text-secondary)] leading-relaxed font-medium">
               Ramesh/Owner accepts online applications only. Upon confirmation, their full verified contact info and direct real-time chat gets completely unlocked for free.
             </div>
           </div>
 
           {/* Quick Hub Similar exploration */}
           {similarRooms.length > 0 && (
-            <div className="bg-indigo-50/60 rounded-3xl p-6 border border-indigo-100 space-y-3">
-              <h4 className="text-xs font-black text-indigo-950 uppercase tracking-widest">Other Options in {room.city}</h4>
+            <div className="bg-indigo-50/60 dark:bg-indigo-900/20 rounded-3xl p-6 border border-indigo-100 dark:border-indigo-800 space-y-3">
+              <h4 className="text-xs font-black text-[var(--color-text-primary)] uppercase tracking-widest">Other Options in {room.city}</h4>
               <div className="space-y-2">
                 {similarRooms.map(sim => (
                   <div
                     key={sim.id}
                     onClick={() => navigate(`/room/${sim.id}`)}
-                    className="p-3 bg-white rounded-2xl border border-indigo-200/60 hover:border-indigo-500 cursor-pointer shadow-2xs hover:shadow transition flex items-center justify-between group"
+                    className="p-3 bg-[var(--color-bg-secondary)] rounded-2xl border border-indigo-200/60 dark:border-indigo-800 hover:border-indigo-500 cursor-pointer shadow-2xs hover:shadow transition flex items-center justify-between group"
                   >
                     <div>
-                      <div className="text-xs font-bold text-indigo-950 group-hover:text-indigo-600 transition line-clamp-1">{sim.title}</div>
-                      <div className="text-[10px] text-slate-500">{sim.wardNo} • ₹{sim.rent}/mo</div>
+                      <div className="text-xs font-bold text-[var(--color-text-primary)] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition line-clamp-1">{sim.title}</div>
+                      <div className="text-[10px] text-[var(--color-text-tertiary)]">{sim.wardNo} • ₹{sim.rent}/mo</div>
                     </div>
                     <span className="text-xs font-extrabold text-indigo-600 group-hover:translate-x-0.5 transition">→</span>
                   </div>
@@ -453,8 +453,8 @@ export const RoomDetail: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth })
 
       {/* Renter Request Custom Application Note Modal */}
       {showRequestModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-8 border border-slate-100 space-y-6 relative overflow-hidden animate-slideUp">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-950/90 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-[var(--color-bg-secondary)] rounded-3xl shadow-2xl max-w-lg w-full p-8 border border-[var(--color-border)] space-y-6 relative overflow-hidden animate-slideUp">
             
             {success ? (
               <div className="py-12 text-center space-y-4 animate-bounce">
@@ -468,14 +468,14 @@ export const RoomDetail: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth })
               </div>
             ) : (
               <>
-                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div className="flex items-center justify-between pb-4 border-b border-[var(--color-border)]">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center font-black">
+                    <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 flex items-center justify-center font-black">
                       ⚡
                     </div>
                     <div>
-                      <h3 className="text-lg font-black text-indigo-950">Confirm Rental Application</h3>
-                      <p className="text-xs text-slate-500">To {room.ownerName} for {room.title}</p>
+                      <h3 className="text-lg font-black text-[var(--color-text-primary)]">Confirm Rental Application</h3>
+                      <p className="text-xs text-[var(--color-text-secondary)]">To {room.ownerName} for {room.title}</p>
                     </div>
                   </div>
                   <button
@@ -488,23 +488,23 @@ export const RoomDetail: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth })
 
                 <form onSubmit={handleSubmitApplication} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Your Application Note to Owner</label>
+                    <label className="block text-xs font-bold text-[var(--color-text-secondary)] mb-1">Your Application Note to Owner</label>
                     <textarea
                       required
                       rows={5}
                       value={applicationNote}
                       onChange={(e) => setApplicationNote(e.target.value)}
-                      className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white leading-relaxed"
+                      className="w-full p-4 bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] rounded-2xl text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-[var(--color-bg-secondary)] leading-relaxed text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)]"
                     ></textarea>
-                    <span className="text-[10px] text-slate-400 mt-1 block">
+                    <span className="text-[10px] text-[var(--color-text-tertiary)] mt-1 block">
                       Tip: Express your professional/student status and move-in readiness to increase your acceptance chances.
                     </span>
                   </div>
 
-                  <div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 flex items-center justify-between text-xs">
+                  <div className="bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-800 flex items-center justify-between text-xs">
                     <div>
-                      <span className="text-indigo-950 font-bold block">Monthly Token Commitment</span>
-                      <span className="text-indigo-600 font-mono font-bold text-sm">₹{room.rent.toLocaleString('en-IN')}</span>
+                      <span className="text-indigo-950 dark:text-indigo-200 font-bold block">Monthly Token Commitment</span>
+                      <span className="text-indigo-600 dark:text-indigo-400 font-mono font-bold text-sm">₹{room.rent.toLocaleString('en-IN')}</span>
                     </div>
                     <span className="bg-indigo-600 text-white font-extrabold px-2.5 py-1 rounded-lg text-[10px]">
                       Brokerage Free ✓
@@ -515,7 +515,7 @@ export const RoomDetail: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth })
                     <button
                       type="button"
                       onClick={() => setShowRequestModal(false)}
-                      className="flex-1 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition"
+                      className="flex-1 py-3.5 bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-border)] text-[var(--color-text-secondary)] font-bold text-xs rounded-xl transition cursor-pointer"
                     >
                       Cancel
                     </button>

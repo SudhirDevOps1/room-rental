@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Sparkles, Users, Key, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
-import { hasRealFirebase } from '../firebase/config';
+import { firebaseConfigError, hasRealFirebase } from '../firebase/config';
 
 export const QuickDemoBanner: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth }) => {
   const { user, loginAsDemoUser } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white border-b border-indigo-700/50 shadow-md transition-all duration-300">
+    <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 dark:from-slate-950 dark:via-indigo-950 dark:to-slate-900 text-white border-b border-indigo-700/50 shadow-md transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           
@@ -25,6 +25,11 @@ export const QuickDemoBanner: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAu
               <span>
                 Engine: <strong className="text-emerald-300">{hasRealFirebase ? '🔥 Live Firebase' : '⚡ Local Hybrid Sync (100% Realtime)'}</strong>
               </span>
+              {!hasRealFirebase && firebaseConfigError && (
+                <span className="text-amber-200 bg-amber-500/10 border border-amber-300/20 px-2 py-0.5 rounded">
+                  Production keys missing. Add env vars before deploy.
+                </span>
+              )}
             </div>
           </div>
 
@@ -32,7 +37,7 @@ export const QuickDemoBanner: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAu
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="bg-white/15 hover:bg-white/25 active:scale-95 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition border border-white/20"
+              className="bg-white/15 hover:bg-white/25 dark:bg-white/10 dark:hover:bg-white/20 active:scale-95 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition border border-white/20"
             >
               <Users className="w-3.5 h-3.5 text-amber-300" />
               <span>Test Accounts Menu</span>

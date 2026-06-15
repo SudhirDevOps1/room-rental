@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Phone, Mail, User as UserIcon, MapPin, Sparkles, X, Check, Shield, ArrowRight, Building2, Search } from 'lucide-react';
-import { POPULAR_CITIES } from '../firebase/mockData';
+import { LOCATION_SUGGESTIONS } from '../hooks/useGeolocation';
 
 export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const { customLoginOrSignup } = useAuth();
@@ -69,13 +69,13 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 dark:bg-slate-950/90 backdrop-blur-sm animate-fadeIn">
+      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 dark:border-slate-700 relative">
         
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition"
+          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition"
         >
           <X className="w-5 h-5" />
         </button>
@@ -118,10 +118,10 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
         </div>
 
         {/* Form Body */}
-        <div className="p-6">
+        <div className="p-6 dark:text-slate-200">
           
           {success && (
-            <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-2xl flex items-center gap-3 animate-bounce mb-4">
+            <div className="bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl flex items-center gap-3 animate-bounce mb-4">
               <div className="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center flex-shrink-0">
                 <Check className="w-5 h-5" />
               </div>
@@ -130,7 +130,7 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
           )}
 
           {error && (
-            <div className="bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-xl text-xs font-medium mb-4 flex items-center gap-2">
+            <div className="bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 p-3 rounded-xl text-xs font-medium mb-4 flex items-center gap-2">
               <span className="font-bold flex-shrink-0">⚠️ Error:</span> {error}
             </div>
           )}
@@ -141,7 +141,7 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
             {mode === 'signup' && (
               <>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Your Full Name</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Your Full Name</label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                       <UserIcon className="w-4 h-4" />
@@ -152,21 +152,21 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
                       placeholder="e.g. Ramesh Sharma"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white"
+                      className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">I am a...</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">I am a...</label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => setRole('room_seeker')}
-                      className={`p-3 rounded-xl border text-left flex flex-col justify-between transition ${
+                      className={`p-3 rounded-xl border text-left flex flex-col justify-between transition cursor-pointer ${
                         role === 'room_seeker' 
-                          ? 'border-indigo-600 bg-indigo-50/70 text-indigo-900 shadow-sm ring-2 ring-indigo-600/20' 
-                          : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-600'
+                          ? 'border-indigo-600 bg-indigo-50/70 dark:bg-indigo-900/40 text-indigo-900 dark:text-indigo-200 shadow-sm ring-2 ring-indigo-600/20' 
+                          : 'border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400'
                       }`}
                     >
                       <div className="flex items-center justify-between w-full mb-1">
@@ -174,16 +174,16 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
                         {role === 'room_seeker' && <span className="w-2 h-2 rounded-full bg-indigo-600"></span>}
                       </div>
                       <span className="text-xs font-bold">Room Seeker</span>
-                      <span className="text-[10px] text-slate-500">Looking to rent</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400">Looking to rent</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setRole('room_owner')}
-                      className={`p-3 rounded-xl border text-left flex flex-col justify-between transition ${
+                      className={`p-3 rounded-xl border text-left flex flex-col justify-between transition cursor-pointer ${
                         role === 'room_owner' 
-                          ? 'border-amber-600 bg-amber-50/70 text-amber-900 shadow-sm ring-2 ring-amber-600/20' 
-                          : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-600'
+                          ? 'border-amber-600 bg-amber-50/70 dark:bg-amber-900/30 text-amber-900 dark:text-amber-200 shadow-sm ring-2 ring-amber-600/20' 
+                          : 'border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400'
                       }`}
                     >
                       <div className="flex items-center justify-between w-full mb-1">
@@ -191,26 +191,27 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
                         {role === 'room_owner' && <span className="w-2 h-2 rounded-full bg-amber-600"></span>}
                       </div>
                       <span className="text-xs font-bold">Room Owner</span>
-                      <span className="text-[10px] text-slate-500">List my rooms</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400">List my rooms</span>
                     </button>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Select Base City</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Select Base City</label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
                       <MapPin className="w-4 h-4" />
                     </span>
-                    <select
+                    <input
+                      list="auth-location-suggestions"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
-                    >
-                      {POPULAR_CITIES.map(c => (
-                        <option key={c.name} value={c.name}>{c.name} ({c.states})</option>
-                      ))}
-                    </select>
+                      placeholder="e.g. Bhabua, Kaimur, Bihar"
+                      className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-slate-900 dark:text-slate-100"
+                    />
+                    <datalist id="auth-location-suggestions">
+                      {LOCATION_SUGGESTIONS.map(place => <option key={place} value={place} />)}
+                    </datalist>
                   </div>
                 </div>
               </>
@@ -219,9 +220,9 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
             {/* Credential inputs */}
             {authType === 'phone' ? (
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Mobile Number</label>
-                <div className="flex rounded-xl overflow-hidden border border-slate-200 focus-within:ring-2 focus-within:ring-indigo-500">
-                  <span className="bg-slate-100 px-3 py-2.5 text-xs font-bold text-slate-600 flex items-center border-r border-slate-200">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Mobile Number</label>
+                <div className="flex rounded-xl overflow-hidden border border-slate-200 dark:border-slate-600 focus-within:ring-2 focus-within:ring-indigo-500">
+                  <span className="bg-slate-100 dark:bg-slate-700 px-3 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center border-r border-slate-200 dark:border-slate-600">
                     🇮🇳 +91
                   </span>
                   <input
@@ -231,18 +232,18 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
                     placeholder="98765 43210"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full px-3 py-2.5 bg-slate-50 text-sm focus:outline-none focus:bg-white font-bold tracking-wide disabled:bg-slate-100 disabled:text-slate-500"
+                    className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-700/50 text-sm focus:outline-none focus:bg-white dark:focus:bg-slate-700 font-bold tracking-wide disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:text-slate-500 dark:disabled:text-slate-400 text-slate-900 dark:text-slate-100"
                   />
                 </div>
                 {!otpSent && (
-                  <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
                     <Sparkles className="w-3 h-3 text-amber-500" /> Enter any number to receive simulated OTP
                   </p>
                 )}
               </div>
             ) : (
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                     <Mail className="w-4 h-4" />
@@ -253,7 +254,7 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
                     placeholder="yourname@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                   />
                 </div>
               </div>
@@ -261,13 +262,13 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
 
             {/* OTP Verification step */}
             {authType === 'phone' && otpSent && (
-              <div className="p-4 bg-indigo-50/60 rounded-2xl border border-indigo-100 animate-fadeIn space-y-2">
+              <div className="p-4 bg-indigo-50/60 dark:bg-indigo-900/30 rounded-2xl border border-indigo-100 dark:border-indigo-800 animate-fadeIn space-y-2">
                 <div className="flex justify-between items-center">
-                  <label className="block text-xs font-bold text-indigo-950">Enter 6-digit OTP</label>
+                  <label className="block text-xs font-bold text-indigo-950 dark:text-indigo-200">Enter 6-digit OTP</label>
                   <button
                     type="button"
                     onClick={() => { setOtpSent(false); setOtp(''); }}
-                    className="text-[11px] font-bold text-indigo-600 hover:underline"
+                    className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
                   >
                     Change phone
                   </button>
@@ -280,11 +281,11 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
                   placeholder="123456"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className="w-full text-center tracking-widest font-mono text-xl py-2.5 bg-white border border-indigo-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600 shadow-inner font-bold text-indigo-900"
+                  className="w-full text-center tracking-widest font-mono text-xl py-2.5 bg-white dark:bg-slate-700 border border-indigo-200 dark:border-indigo-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600 shadow-inner font-bold text-indigo-900 dark:text-indigo-200"
                 />
-                <div className="text-[11px] text-slate-600 flex items-center justify-between pt-1">
-                  <span>Demo Tip: Enter <strong className="text-indigo-700 font-mono bg-indigo-100 px-1 py-0.5 rounded">123456</strong></span>
-                  <span className="text-emerald-600 font-medium">✓ Auto-filled</span>
+                <div className="text-[11px] text-slate-600 dark:text-slate-400 flex items-center justify-between pt-1">
+                  <span>Demo Tip: Enter <strong className="text-indigo-700 dark:text-indigo-300 font-mono bg-indigo-100 dark:bg-indigo-800 px-1 py-0.5 rounded">123456</strong></span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-medium">✓ Auto-filled</span>
                 </div>
               </div>
             )}
@@ -316,13 +317,13 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
           </form>
 
           {/* Switch Modes Link */}
-          <div className="mt-6 pt-4 border-t border-slate-100 text-center">
-            <p className="text-xs text-slate-500">
+          <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 text-center">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               {mode === 'signin' ? "Don't have an account?" : "Already registered?"}
               <button
                 type="button"
                 onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); resetForm(); }}
-                className="font-bold text-indigo-600 hover:text-indigo-800 ml-1.5 focus:outline-none hover:underline"
+                className="font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 ml-1.5 focus:outline-none hover:underline"
               >
                 {mode === 'signin' ? 'Create new account' : 'Sign in to existing'}
               </button>

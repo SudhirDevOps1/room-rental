@@ -5,7 +5,7 @@ import { POPULAR_CITIES } from '../firebase/mockData';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-slate-900 text-slate-400 border-t border-slate-800 pt-12 pb-8 mt-20">
+    <footer className="bg-slate-900 dark:bg-slate-950 text-slate-400 dark:text-slate-500 border-t border-slate-800 dark:border-slate-800 pt-12 pb-8 mt-20 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           
@@ -17,7 +17,7 @@ export const Footer: React.FC = () => {
               </div>
               <span className="text-xl font-extrabold text-white tracking-tight">NestFinder</span>
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-slate-400 dark:text-slate-500 leading-relaxed">
               India's premium live location-based Room & PG Rental Marketplace. Built with high-speed Geo-indexing, live availability trackers, and instant direct owner messaging.
             </p>
             <div className="flex items-center gap-2 pt-1 text-xs text-indigo-400 font-semibold">
@@ -33,9 +33,9 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2 text-xs">
               {POPULAR_CITIES.map(c => (
                 <li key={c.name}>
-                  <NavLink to="/search" className="hover:text-white transition flex items-center justify-between">
+                  <NavLink to="/search" className="hover:text-white dark:hover:text-slate-300 transition flex items-center justify-between">
                     <span>Rooms in {c.name}</span>
-                    <span className="bg-slate-800 px-2 py-0.5 rounded text-[10px] text-slate-400">Ward Priority</span>
+                    <span className="bg-slate-800 dark:bg-slate-800 px-2 py-0.5 rounded text-[10px] text-slate-400">Ward Priority</span>
                   </NavLink>
                 </li>
               ))}
@@ -49,18 +49,18 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <NavLink to="/search" className="hover:text-white transition">Room Seekers Portal</NavLink>
+                <NavLink to="/search" className="hover:text-white dark:hover:text-slate-300 transition">Room Seekers Portal</NavLink>
               </li>
               <li>
-                <NavLink to="/register-room" className="hover:text-white transition flex items-center gap-1.5 text-amber-400">
+                <NavLink to="/register-room" className="hover:text-white dark:hover:text-slate-300 transition flex items-center gap-1.5 text-amber-400">
                   <Sparkles className="w-3.5 h-3.5" /> Post Room Listing (Free)
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/my-listings" className="hover:text-white transition">Owner Management Desk</NavLink>
+                <NavLink to="/my-listings" className="hover:text-white dark:hover:text-slate-300 transition">Owner Management Desk</NavLink>
               </li>
               <li>
-                <NavLink to="/my-requests" className="hover:text-white transition">Rental Requests Tracker</NavLink>
+                <NavLink to="/my-requests" className="hover:text-white dark:hover:text-slate-300 transition">Rental Requests Tracker</NavLink>
               </li>
             </ul>
           </div>
@@ -70,10 +70,10 @@ export const Footer: React.FC = () => {
             <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider flex items-center gap-1.5">
               <PhoneCall className="w-4 h-4 text-emerald-400" /> Live Support
             </h4>
-            <p className="text-xs text-slate-400 leading-relaxed mb-3">
+            <p className="text-xs text-slate-400 dark:text-slate-500 leading-relaxed mb-3">
               Have questions or need assistance finding an independent PG or family apartment?
             </p>
-            <div className="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/80 text-xs">
+            <div className="bg-slate-800/80 dark:bg-slate-800/60 p-3 rounded-2xl border border-slate-700/80 text-xs">
               <div className="text-white font-bold mb-1">Helpdesk Helpline</div>
               <div className="text-emerald-400 font-mono text-sm font-bold">+91 98110 00000</div>
               <div className="text-[10px] text-slate-500 mt-1">10:00 AM - 07:00 PM (IST)</div>
@@ -83,7 +83,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-slate-800/80 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="border-t border-slate-800 dark:border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>
             © {new Date().getFullYear()} NestFinder / Roomify Tech Inc. All rights reserved. Built for Location-based Room Rental.
           </div>
